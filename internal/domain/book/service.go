@@ -1,29 +1,27 @@
 package book
 
-import "context"
+import (
+	"context"
 
-type Service interface {
-	GetBookByUUID(ctx context.Context, uuid string) *Book
-	GetAllBooks(ctx context.Context, limit, offset int) []*Book
-	CreateBook(ctx context.Context, dto CreateBookDTO) *Book
-}
+	"ca-library-app/internal/adapters/api/book"
+)
 
 type service struct {
 	storage Storage
 }
 
-func NewService(storage Storage) Service {
+func NewService(storage Storage) book.Service {
 	return &service{storage: storage}
 }
 
-func (s *service) CreateBook(ctx context.Context, dto CreateBookDTO) *Book {
+func (s *service) Create(ctx context.Context, dto CreateBookDTO) *Book {
 	return nil
 }
 
-func (s *service) GetAllBooks(ctx context.Context, limit, offset int) []*Book {
+func (s *service) GetAll(ctx context.Context, limit, offset int) []*Book {
 	return s.storage.GetAll(limit, offset)
 }
 
-func (s *service) GetBookByUUID(ctx context.Context, uuid string) *Book {
+func (s *service) GetByUUID(ctx context.Context, uuid string) *Book {
 	return s.storage.GetOne(uuid)
 }
