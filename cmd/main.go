@@ -1,22 +1,39 @@
 package main
 
 import (
-	author3 "ca-library-app/internal/adapters/api/author"
-	book3 "ca-library-app/internal/adapters/api/book"
-	author2 "ca-library-app/internal/adapters/db/author"
-	book2 "ca-library-app/internal/adapters/db/book"
-	"ca-library-app/internal/domain/author"
-	"ca-library-app/internal/domain/book"
+	"ca-library-app/internal/composites"
+	"context"
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
 	// entrypoint
-	bookStorage := book2.NewStorage()
-	bookService := book.NewService(bookStorage)
-	bookHandler := book3.NewHandler(bookService)
+	//bookStorage := book2.NewStorage()
+	//bookService := book.NewService(bookStorage)
+	//bookHandler := book3.NewHandler(bookService)
 
-	authorStorage := author2.NewStorage()
-	authorService := author.NewService(authorStorage)
-	authorHandler := author3.NewHandler(authorService)
+	router := httprouter.New()
 
+	mongodbComposite, m := composites.NewMongoDBComposite(context.Background(), "", "", "", "", "", "")
+	if m != nil {
+		return
+	}
+
+	bookComposite, err := composites.NewBookComposite(mongodbComposite)
+	if err != nil {
+		return
+	}
+
+	//authorHandler := author3.NewHandler(authorService)
+	//authorService := author.NewService(authorStorage)
+	//authorStorage := author2.NewStorage()
+	authorComposite, err := composites.NewAuthorComposite(mongodbComposite)
+	if err != nil {
+		return
+	}
+
+	bookComposite.Handler(router)
+	authorComposite.Handler(router)
+
+	//start
 }
